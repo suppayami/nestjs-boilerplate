@@ -1,0 +1,9 @@
+{
+    "[typescript]": {
+        "editor.formatOnSave": true
+    },
+    "[markdown]": {
+        "editor.formatOnSave": false
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
+}
