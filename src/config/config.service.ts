@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { GqlOptionsFactory, GqlModuleOptions } from '@nestjs/graphql'
 import { NamingStrategy } from 'src/namingStrategy'
 
 @Injectable()
-export class ConfigService implements TypeOrmOptionsFactory {
+export class ConfigService implements TypeOrmOptionsFactory, GqlOptionsFactory {
     isProduction() {
         return process.env.NODE_ENV === 'production'
     }
@@ -16,6 +17,9 @@ export class ConfigService implements TypeOrmOptionsFactory {
         return parseInt(process.env[key] || '0', 10) || defaultValue
     }
 
+    /**
+     * TypeORM Options Factory
+     */
     createTypeOrmOptions(): TypeOrmModuleOptions {
         return {
             type: 'postgres',
@@ -23,7 +27,7 @@ export class ConfigService implements TypeOrmOptionsFactory {
             port: this.getNumber('DB_PORT', 6543),
             username: this.get('DB_USERNAME', 'postgres'),
             password: this.get('DB_PASSWORD', 'postgres'),
-            database: this.get('DB_NAME', 'dev'),
+            database: this.get('DB_NAME', 'agia_dev'),
             entities: ['dist/**/*.entity{.ts,.js}'],
             migrations: ['dist/migrations/**/*{.ts,.js}'],
             cli: {
@@ -33,6 +37,17 @@ export class ConfigService implements TypeOrmOptionsFactory {
             namingStrategy: new NamingStrategy(),
             logging: ['query', 'error', 'warn'],
             ssl: this.isProduction(),
+        }
+    }
+
+    /**
+     * GraphQL Options Factory
+     */
+    createGqlOptions(): GqlModuleOptions {
+        return {
+            typePaths: ['./src/**/*.graphql', './dist/**/*.graphql'],
+            path: '/api/graphql',
+            debug: !this.isProduction(),
         }
     }
 }

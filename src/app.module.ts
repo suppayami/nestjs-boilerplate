@@ -11,12 +11,7 @@ import { AccountsModule } from './accounts/accounts.module'
         // GraphQL Module
         GraphQLModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                typePaths: ['./src/**/*.graphql', './dist/**/*.graphql'],
-                path: '/api/graphql',
-                debug: !configService.isProduction(),
-            }),
-            inject: [ConfigService],
+            useExisting: ConfigService,
         }),
 
         // TypeOrm Module
